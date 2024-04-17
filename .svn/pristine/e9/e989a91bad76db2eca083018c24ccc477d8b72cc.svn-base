@@ -1,0 +1,36 @@
+package kr.happyjob.study.tut.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import kr.happyjob.study.system.model.ComnCodUtilModel;
+import kr.happyjob.study.system.model.ComnDtlCodModel;
+import kr.happyjob.study.system.model.ComnGrpCodModel;
+import kr.happyjob.study.tut.model.ReportControlVo;
+
+public interface ReportControlDao {
+	
+	public List<ReportControlVo> showLectureList(Map<String, Object> paramMap);
+
+	public List<ReportControlVo> showLectureInfo(Map<String, Object> paramMap);
+
+	public List<ReportControlVo> showProjectInfo(Map<String, Object> paramMap);
+
+	public List<ReportControlVo> showSubmitInfo(Map<String, Object> paramMap);
+
+	public ReportControlVo showStudentCon(Map<String, Object> paramMap);
+
+	public ReportControlVo showProjectInfo2(Map<String, Object> paramMap);
+
+
+
+	// 
+	public int makeProject(Map<String, Object> paramMap);
+
+	public int updateProject(Map<String, Object> paramMap);
+
+
+	
+}

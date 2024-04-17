@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.happyjob.study.adm.dao.LectureAdviceDao">
+
+	<!-- 전체 강의목록 -->
+	<select id="lecAdList" resultType="kr.happyjob.study.adm.model.LectureAdviceModel">
+		/*kr.happy.study.adm.dao.TestPubDao.lecAdList*/
+		SELECT
+		lec_no,
+		lec_nm,
+		DATE_FORMAT(lec_start, '%Y.%m.%d') as lec_start,
+		DATE_FORMAT(lec_end,'%Y.%m.%d') as lec_end
+		FROM tb_lecture
+			<if test="(searchWord_lec != null) and (!searchWord_lec.equals(''))">
+				where lec_nm Like CONCAT('%',#{searchWord_lec}, '%')
+			</if>
+		<if
+			test="(pageIndex != null) and (!pageIndex.equals('')) and (pageSize != null) and (!pageSize.equals(''))">
+			LIMIT #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+	<!-- 강의 총 갯수 조회 -->
+	<select id="lecAdListCount" resultType="int">
+		SELECT COUNT(1) AS tot_cnt
+		FROM tb_lecture 
+		<if test="(searchWord_lec != null) and (!searchWord_lec.equals(''))">
+			where lec_nm Like CONCAT('%',#{searchWord_lec}, '%')
+		</if>
+
+	</select>
+	<!-- 과목별 상담 학생목록 -->
+	<select id="std_list" resultType="kr.happyjob.study.adm.model.AdviceModel">
+		SELECT
+			a.adv_no,
+			a.lec_no,
+			a.user_no,
+			u.name as std_name,
+			us.name as tut_name,
+			DATE_FORMAT(a.adv_date, '%Y.%m.%d') as adv_date,
+			a.tut_id,
+			l.lec_nm
+		FROM tb_advice a
+		LEFT JOIN tb_userinfo u 
+		ON a.user_no =u.user_no
+		LEFT JOIN tb_userinfo us
+		ON a.tut_id = us.loginID
+		LEFT JOIN tb_lecture l
+		ON a.lec_no = l.lec_no
+		<where>
+			<if test="(lec_no != null) and (!lec_no.equals(''))">
+			and a.lec_no=#{lec_no}
+			</if>
+			<if test="(searchKey_adv != null) and (!searchKey_adv.equals(''))">
+				<choose>
+					<when
+						test="(searchKey_adv != null) and (searchKey_adv eq 'all'.toString())">
+						and (u.name Like CONCAT('%', #{searchWord_adv}, '%') or
+						u.loginID LIKE CONCAT('%', #{searchWord_adv}, '%'))
+					</when>
+					<when
+						test="(searchKey_adv != null) and (searchKey_adv eq 'stdNm'.toString())">
+						and u.name Like CONCAT('%', #{searchWord_adv}, '%')
+					</when>
+					<when
+						test="(searchKey_adv != null) and (searchKey_adv eq 'stdId'.toString())">
+						and u.loginID LIKE CONCAT('%', #{searchWord_adv}, '%')
+					</when>
+				</choose>
+			</if>
+		</where>
+			order by adv_no DESC
+		<if test="(pageIndex != null) and (!pageIndex.equals('')) and (pageSize_adv != null) and (!pageSize_adv.equals(''))">
+			LIMIT #{pageIndex}, #{pageSize_adv}
+		</if>
+	</select>
+	
+	<!-- 상담 목록 총 갯수 조회 -->
+	<select id="countList_Advice" resultType="int">
+		SELECT COUNT(1) AS
+		tot_cnt FROM tb_advice a
+		inner join tb_userinfo u
+		on
+		a.user_no =u.user_no
+		<where>
+		<if test="(lec_no != null) and (!lec_no.equals(''))">
+			and lec_no=#{lec_no}
+			</if>
+			<if test="(searchKey_adv != null) and (!searchKey_adv.equals(''))">
+				<choose>
+					<when
+						test="(searchKey_adv != null) and (searchKey_adv eq 'all'.toString())">
+						and (u.name Like CONCAT('%', #{searchWord_adv}, '%') or
+						u.loginID LIKE CONCAT('%', #{searchWord_adv}, '%'))
+					</when>
+					<when
+						test="(searchKey_adv != null) and (searchKey_adv eq 'stdNm'.toString())">
+						and u.name Like CONCAT('%', #{searchWord_adv}, '%')
+					</when>
+					<when
+						test="(searchKey_adv != null) and (searchKey_adv eq 'stdId'.toString())">
+						and u.loginID LIKE CONCAT('%', #{searchWord_adv}, '%')
+					</when>
+				</choose>
+			</if>
+		</where>
+	</select>
+	<!--강의수강 학생 목록 -->
+	<select id="lec_stu_list" resultType="kr.happyjob.study.adm.model.AdviceModel">
+	SELECT 
+  		l.lec_no,
+		l.user_no,
+		u.name as std_name
+ 	FROM tb_lecstd_info l
+ 	inner join tb_userinfo u
+	on l.user_no =u.user_no
+	where l.lec_no=#{lec_no}
+	</select>
+	
+	<!--상담등록 -->
+	<insert id="adv_register">
+	<selectKey resultType="int" keyProperty="advNo" order="BEFORE">
+			select ifnull(max(adv_no),0) + 1 from tb_advice
+		</selectKey>
+		insert into tb_advice (
+		adv_no,
+		lec_no,
+		user_no,
+		tut_id,
+		adv_content,
+		adv_place,
+		adv_date) values
+		(#{advNo},
+		 #{lec_no},
+		 #{user_no},
+		 #{tut_id},
+		 #{adv_content},
+		 #{adv_place},
+		 #{adv_date})
+	</insert>
+	<!--단건 조회 -->
+	<select id="adv_one" resultType="kr.happyjob.study.adm.model.AdviceModel">
+		select
+		a.adv_no,
+    	a.lec_no,
+    	a.user_no,
+    	a.tut_id,
+    	a.adv_content,
+    	a.adv_place,
+    	a.adv_date,
+		u.name as std_name,
+   		 us.name as tut_name,
+		l.lec_nm as lec_nm
+		from tb_advice a
+		inner join tb_userinfo u
+		on
+		a.user_no = u.user_no
+		inner join
+		tb_userinfo us
+		on a.tut_id = us.loginID
+		inner join tb_lecture l
+		on a.lec_no = l.lec_no
+		where adv_no=#{adv_no}
+	</select>
+	
+	<!--상담 수정 -->
+	<update id="adv_update">
+		update tb_advice set
+		adv_content=#{adv_content},adv_place=#{adv_place},adv_date=#{adv_date}	
+		where
+		adv_no=#{adv_no}
+	</update>
+	
+	<!--상담 삭제 -->
+	<delete id="adv_del">
+		delete from tb_advice where adv_no=#{adv_no}
+	</delete>
+	
+</mapper>

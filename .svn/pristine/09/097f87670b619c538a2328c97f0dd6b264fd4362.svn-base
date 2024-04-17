@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.happyjob.study.adm.dao.EmploymentDao">
+
+<select id="employmentList" resultType="kr.happyjob.study.adm.model.EmployInfoVO">
+		select employment_no
+		,classroom_nm
+		,seat_cnt
+		,classroom_etc
+		,classroom_size
+		from tb_employment
+		<where>
+			<if test="(searchEmployment != null) and (!(searchEmployment.equals(''))">
+				and classroom_nm like CONCAT('%', #{(searchEmployment},
+				'%')
+			</if>
+		</where>
+		LIMIT #{startpos}, #{pagesize}
+	</select>
+
+	<!-- 총 갯수 조회 -->
+	<select id="employmentCnt" resultType="int">
+		select count(*)
+		from
+		tb_employment
+	</select>
+
+</mapper>

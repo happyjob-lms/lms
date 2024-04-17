@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.happyjob.study.adm.dao.EmploymentDao">
+
+	<select id="employmentList" resultType="kr.happyjob.study.adm.model.EmployInfoVO">
+		select e.employment_no,
+		e.user_no,
+		e.company_name,
+		e.employment_day,
+		e.leaving_date,
+		e.employment_state,
+		e.etc_company,
+		e.register_state,
+		u.name AS name,
+		u.user_phone
+		FROM
+		tb_employment e
+		JOIN
+		tb_userinfo u ON e.user_no = u.user_no
+		LIMIT #{startpos}, #{pagesize}
+	</select>
+
+	<select id="lectureUserList" resultType="kr.happyjob.study.adm.model.EmployInfoVO">
+		SELECT
+		l.lec_no,
+		l.lec_nm,
+		u.user_no,
+		u.name,
+		u.user_phone,
+		u.created_at
+		FROM
+		tb_lecture l
+		JOIN
+		tb_lecstd_info ls ON l.lec_no = ls.lec_no
+		JOIN
+		tb_userinfo u ON ls.user_no = u.user_no
+		LIMIT #{startpos}, #{pagesize}
+	</select>
+
+	<select id="lectureUserCnt" resultType="int">
+		select count(*)
+		from
+		tb_lecture l
+		JOIN
+		tb_lecstd_info ls ON l.lec_no = ls.lec_no
+		JOIN
+		tb_userinfo u ON ls.user_no = u.user_no
+	</select>
+
+	<!-- 총 갯수 조회 -->
+	<select id="employmentCnt" resultType="int">
+		select count(*)
+		from
+		tb_employment
+	</select>
+
+</mapper>

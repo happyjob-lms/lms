@@ -1,0 +1,144 @@
+package kr.happyjob.study.adm.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.happyjob.study.adm.model.EquipmentVO;
+import kr.happyjob.study.adm.service.EquipmentService;
+
+@Controller
+@RequestMapping("/adm/")
+public class EquipmentController {
+
+	@Autowired
+	EquipmentService equipmentService;
+
+	// Set logger
+	private final Logger logger = LogManager.getLogger(this.getClass());
+
+	// Get class name for logger
+	private final String className = this.getClass().toString();
+
+	@RequestMapping("equipmentControl.do")
+	public String classRoom(@RequestParam Map<String, Object> paramMap, Model model, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) throws Exception {
+
+		logger.info("+ Start " + className + ".notice");
+		logger.info("   - paramMap : " + paramMap);
+
+		logger.info("+ End " + className + ".notice");
+
+		return "adm/equipment";
+	}
+	
+	@RequestMapping("equipmentList.do")
+	public String equipmentList(@RequestParam Map<String, Object> paramMap, Model model, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) throws Exception {
+		
+		logger.info("+ Start " + className + ".equipmentList");
+		logger.info("	- paramMap : " + paramMap);
+		
+		int cpage = Integer.valueOf((String) paramMap.get("cpage"));
+		int pagesize = Integer.valueOf((String) paramMap.get("pagesize"));
+		int startpos = (cpage - 1) * pagesize;
+
+		paramMap.put("startpos", startpos);
+		paramMap.put("pagesize", pagesize);
+		
+		List<EquipmentVO> listData = equipmentService.equipmentList(paramMap);
+		System.out.println("::::" + listData);
+		int listCnt = equipmentService.equipmentCnt(paramMap);
+		
+		model.addAttribute("listData", listData);
+		model.addAttribute("listCnt", listCnt);
+				
+		return "adm/equipmentList";
+		
+	}
+	@RequestMapping("equipmentDtlList.do")
+	public List<EquipmentVO> equipmentDtlList(@RequestParam Map<String, Object> paramMap, Model model, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) throws Exception {
+		
+		logger.info("+ Start " + className + ".equipmentList");
+		logger.info("	- paramMap : " + paramMap);
+		
+		int cpage = Integer.valueOf((String) paramMap.get("cpage"));
+		int pagesize = Integer.valueOf((String) paramMap.get("pagesize"));
+		int startpos = (cpage - 1) * pagesize;
+		
+		paramMap.put("startpos", startpos);
+		paramMap.put("pagesize", pagesize);
+		
+		List<EquipmentVO> listData = equipmentService.equipmentList(paramMap);
+		int listCnt = equipmentService.equipmentCnt(paramMap);
+		
+		model.addAttribute("listData", listData);
+		model.addAttribute("listCnt", listCnt);
+		
+		return listData;
+		
+	}
+	
+	@RequestMapping("equipmentSave.do")
+	@ResponseBody
+	public Map<String, Object> equipmentSave(@RequestParam Map<String, Object> paramMap, Model model,
+			HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
+
+		logger.info("+ Start " + className + ".classroomsave");
+		logger.info("   - paramMap : " + paramMap);
+
+		Map<String, Object> returnmap = new HashMap<String, Object>();
+
+		String action = (String) paramMap.get("action");
+		int sreturn = 0;
+		String result = "";
+		String resultmsg = "";
+
+		if ("I".equals(action)) {
+			sreturn = equipmentService.equipmentSave(paramMap);
+		} else if ("U".equals(action)) {
+			sreturn = equipmentService.equipmentUpdate(paramMap);
+		} else if ("D".equals(action)) {
+			sreturn = equipmentService.equipmentDelete(paramMap);
+		}
+
+		if (sreturn >= 0) {
+			result = "S";
+			if ("D".equals(action)) {
+				resultmsg = "삭제 되었습니다.";
+			} else {
+				resultmsg = "저장 되었습니다.";
+			}
+
+		} else {
+			result = "F";
+			if ("D".equals(action)) {
+				resultmsg = "삭제 실패 했습니다.";
+			} else {
+				resultmsg = "저장에 실패 했습니다.";
+			}
+
+		}
+
+		returnmap.put("result", result);
+		returnmap.put("resultmsg", resultmsg);
+
+		logger.info("+ End " + className + ".equipmentsave");
+
+		return returnmap;
+	}
+}

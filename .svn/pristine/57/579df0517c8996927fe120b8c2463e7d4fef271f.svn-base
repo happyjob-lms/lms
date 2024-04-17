@@ -1,0 +1,96 @@
+package kr.happyjob.study.adm.model;
+
+public class EmployInfoVO {
+
+	private int employment_no;
+	private int user_no;
+	private String company_name;
+	private String employment_day;
+	private String leaving_date;
+	private String employment_state;
+	private String etc_company;
+	private String register_state;
+	
+	private String name;
+	private String user_phone;
+	
+	private String lec_nm;
+	private String created_at;
+	
+	
+	
+	public String getLec_nm() {
+		return lec_nm;
+	}
+	public void setLec_nm(String lec_nm) {
+		this.lec_nm = lec_nm;
+	}
+	public String getCreated_at() {
+		return created_at;
+	}
+	public void setCreated_at(String created_at) {
+		this.created_at = created_at;
+	}
+	public String getUser_phone() {
+		return user_phone;
+	}
+	public void setUser_phone(String user_phone) {
+		this.user_phone = user_phone;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getEmployment_no() {
+		return employment_no;
+	}
+	public void setEmployment_no(int employment_no) {
+		this.employment_no = employment_no;
+	}
+	public int getUser_no() {
+		return user_no;
+	}
+	public void setUser_no(int user_no) {
+		this.user_no = user_no;
+	}
+	public String getCompany_name() {
+		return company_name;
+	}
+	public void setCompany_name(String company_name) {
+		this.company_name = company_name;
+	}
+	public String getEmployment_day() {
+		return employment_day;
+	}
+	public void setEmployment_day(String employment_day) {
+		this.employment_day = employment_day;
+	}
+	public String getLeaving_date() {
+		return leaving_date;
+	}
+	public void setLeaving_date(String leaving_date) {
+		this.leaving_date = leaving_date;
+	}
+	public String getEmployment_state() {
+		return employment_state;
+	}
+	public void setEmployment_state(String employment_state) {
+		this.employment_state = employment_state;
+	}
+	public String getEtc_company() {
+		return etc_company;
+	}
+	public void setEtc_company(String etc_company) {
+		this.etc_company = etc_company;
+	}
+	public String getRegister_state() {
+		return register_state;
+	}
+	public void setRegister_state(String register_state) {
+		this.register_state = register_state;
+	}
+	
+	
+}

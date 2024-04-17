@@ -1,0 +1,22 @@
+package kr.happyjob.study.notice.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.happyjob.study.notice.model.Noticevo;
+import kr.happyjob.study.system.model.ComnCodUtilModel;
+import kr.happyjob.study.system.model.ComnDtlCodModel;
+import kr.happyjob.study.system.model.ComnGrpCodModel;
+
+public interface NoticeDao {
+
+	/** 목록 조회 */
+	public List<Noticevo> noticelist(Map<String, Object> paramMap) throws Exception;
+	
+	/** 카운트 조회 */
+	public int noticecnt(Map<String, Object> paramMap) throws Exception;
+	
+	/** 등록 */
+	public int noticesave(Map<String, Object> paramMap) throws Exception;
+	
+}

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.happyjob.study.tut.dao.PfsSurveyDao">
+
+	<select id="pfsLectureList" resultType="kr.happyjob.study.tut.model.PfsLectureVO">
+		select l.lec_no
+		      ,l.lec_nm
+		      ,l.lec_start
+		      ,l.lec_end
+		      ,l.lec_cnt
+		      ,l.lec_max_cnt
+		from tb_lecture l
+		inner join tb_userinfo ui 
+		ON ui.user_no = l.user_no
+		where ui.user_type = 'B'
+		and ui.user_no = #{user_no}
+	</select>
+	
+	<select id="lectureStdList" resultType="kr.happyjob.study.tut.model.LectureStdListVO">
+		select l.user_no
+			,ui.name
+			,ui.user_phone
+			,case when ifnull(sr.cnt,0) = 0 then 'N'
+			      else 'Y'
+			 end as rcnt
+		FROM tb_lecstd_info l
+		     inner join tb_userinfo ui on l.user_no = ui.user_no
+		     left outer join ( 
+		                        select lec_no
+		                               ,user_no
+		                               ,count(*) as cnt
+		                        from tb_srvy_result
+		                        group by lec_no, user_no
+		                     ) sr on l.lec_no = sr.lec_no and l.user_no = sr.user_no 
+		where l.lec_no = #{lec_no}
+	</select>
+	
+	<select id="srvyStatistics" resultType="kr.happyjob.study.tut.model.SrvyStatisticsVO">
+		SELECT
+		    nums.select_num,
+		    COALESCE(COUNT(results.select_num), 0) AS cnt
+		FROM
+		    (SELECT 1 AS select_num UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5) AS nums
+		LEFT JOIN
+		    (SELECT DISTINCT user_no, select_num FROM tb_srvy_result WHERE lec_no = #{lecno}) AS results ON nums.select_num = results.select_num
+		GROUP BY
+		    nums.select_num
+	</select>
+
+</mapper>
